@@ -6,11 +6,11 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.reply_to(message, "Bot is working!")
+    bot.send_message(message.chat.id, "Hello! Bot is working.")
 
 @bot.message_handler(func=lambda message: True)
-def reply(message):
-    bot.reply_to(message, "Message received successfully.")
+def echo(message):
+    bot.reply_to(message, f"You said: {message.text}")
 
-print("Bot is running...")
-bot.infinity_polling(skip_pending=True)
+print("Bot started successfully...")
+bot.infinity_polling()
