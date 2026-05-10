@@ -1,16 +1,27 @@
+import os
 import telebot
+from openai import OpenAI
 
-BOT_TOKEN = "8710393332:AAHtd20FWZwqzkk0KLbGi5Tla-dixEeS--Q"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 bot = telebot.TeleBot(BOT_TOKEN)
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    bot.send_message(message.chat.id, "Hello! Bot is working.")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 @bot.message_handler(func=lambda message: True)
-def echo(message):
-    bot.reply_to(message, f"You said: {message.text}")
+def chat(message):
+    user_text = message.text
 
-print("Bot started successfully...")
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": user_text}
+        ]
+    )
+
+    reply = response.choices[0].message.content
+
+    bot.reply_to(message, reply)
+
+print("AI Bot Running...")
 bot.infinity_polling()
